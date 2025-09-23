@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyTitle>Práctica de Recursividad</AssemblyTitle>
+    <AssemblyDescription>Aplicación de escritorio con 7 ejercicios de recursividad</AssemblyDescription>
+    <AssemblyCompany>Estudiante</AssemblyCompany>
+    <AssemblyProduct>Recursividad2</AssemblyProduct>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+  </PropertyGroup>
+
+</Project>
