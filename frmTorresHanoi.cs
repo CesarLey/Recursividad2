@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 namespace Recursividad2
@@ -18,7 +19,7 @@ namespace Recursividad2
             this.txtDiscos = new TextBox();
             this.btnResolver = new Button();
             this.lblMovimientos = new Label();
-            this.txtMovimientos = new TextBox();
+            this.lvMovimientos = new ListView(); // Cambiado de TextBox a ListView
             this.btnLimpiar = new Button();
             this.btnRegresar = new Button();
             this.lblInformacion = new Label();
@@ -78,15 +79,15 @@ namespace Recursividad2
             this.lblMovimientos.TabIndex = 5;
             this.lblMovimientos.Text = "Secuencia de movimientos:";
 
-            // txtMovimientos
-            this.txtMovimientos.Font = new Font("Microsoft Sans Serif", 10F);
-            this.txtMovimientos.Location = new Point(80, 230);
-            this.txtMovimientos.Multiline = true;
-            this.txtMovimientos.Name = "txtMovimientos";
-            this.txtMovimientos.ReadOnly = true;
-            this.txtMovimientos.ScrollBars = ScrollBars.Vertical;
-            this.txtMovimientos.Size = new Size(400, 200);
-            this.txtMovimientos.TabIndex = 6;
+            // lvMovimientos (ListView para los movimientos)
+            this.lvMovimientos.Columns.AddRange(new ColumnHeader[] { new ColumnHeader { Text = "Paso", Width = 80 }, new ColumnHeader { Text = "Acción", Width = 310 } });
+            this.lvMovimientos.Font = new Font("Microsoft Sans Serif", 10F);
+            this.lvMovimientos.Location = new Point(80, 230);
+            this.lvMovimientos.Name = "lvMovimientos";
+            this.lvMovimientos.Size = new Size(400, 200);
+            this.lvMovimientos.TabIndex = 6;
+            this.lvMovimientos.View = View.Details;
+            this.lvMovimientos.GridLines = true;
 
             // btnLimpiar
             this.btnLimpiar.Font = new Font("Microsoft Sans Serif", 12F);
@@ -114,7 +115,7 @@ namespace Recursividad2
             this.ClientSize = new Size(520, 460);
             this.Controls.Add(this.btnRegresar);
             this.Controls.Add(this.btnLimpiar);
-            this.Controls.Add(this.txtMovimientos);
+            this.Controls.Add(this.lvMovimientos);
             this.Controls.Add(this.lblMovimientos);
             this.Controls.Add(this.btnResolver);
             this.Controls.Add(this.txtDiscos);
@@ -134,7 +135,7 @@ namespace Recursividad2
         private TextBox txtDiscos;
         private Button btnResolver;
         private Label lblMovimientos;
-        private TextBox txtMovimientos;
+        private ListView lvMovimientos;
         private Button btnLimpiar;
         private Button btnRegresar;
 
@@ -147,26 +148,26 @@ namespace Recursividad2
         /// <param name="origen">Torre origen (A, B, C)</param>
         /// <param name="destino">Torre destino (A, B, C)</param>
         /// <param name="auxiliar">Torre auxiliar (A, B, C)</param>
-        /// <param name="resultado">StringBuilder para almacenar los movimientos</param>
-        private void ResolverHanoiRecursivo(int discos, char origen, char destino, char auxiliar, System.Text.StringBuilder resultado)
+        /// <param name="movimientos">ListView para mostrar los movimientos</param>
+        private void ResolverHanoiRecursivo(int discos, char origen, char destino, char auxiliar, ListView movimientos)
         {
             // Caso base: si solo hay un disco, lo movemos directamente
             if (discos == 1)
             {
                 contadorMovimientos++;
-                resultado.AppendLine($"Movimiento {contadorMovimientos}: Mover disco de {origen} a {destino}");
+                movimientos.Items.Add(new ListViewItem(new string[] { contadorMovimientos.ToString(), $"Mover disco de {origen} a {destino}" }));
             }
             else
             {
                 // Paso 1: Mover n-1 discos de origen a auxiliar
-                ResolverHanoiRecursivo(discos - 1, origen, auxiliar, destino, resultado);
+                ResolverHanoiRecursivo(discos - 1, origen, auxiliar, destino, movimientos);
                 
                 // Paso 2: Mover el disco más grande de origen a destino
                 contadorMovimientos++;
-                resultado.AppendLine($"Movimiento {contadorMovimientos}: Mover disco de {origen} a {destino}");
+                movimientos.Items.Add(new ListViewItem(new string[] { contadorMovimientos.ToString(), $"Mover disco de {origen} a {destino}" }));
                 
                 // Paso 3: Mover n-1 discos de auxiliar a destino
-                ResolverHanoiRecursivo(discos - 1, auxiliar, destino, origen, resultado);
+                ResolverHanoiRecursivo(discos - 1, auxiliar, destino, origen, movimientos);
             }
         }
 
@@ -216,27 +217,25 @@ namespace Recursividad2
                 // Reiniciar contador de movimientos
                 contadorMovimientos = 0;
                 
-                // Crear StringBuilder para almacenar los movimientos
-                System.Text.StringBuilder resultado = new System.Text.StringBuilder();
-                
-                resultado.AppendLine($"=== SOLUCIÓN PARA {discos} DISCO(S) ===");
-                resultado.AppendLine($"Torre origen: A, Torre destino: C, Torre auxiliar: B");
-                resultado.AppendLine();
+                // Limpiar la lista de movimientos
+                lvMovimientos.Items.Clear();
                 
                 // Resolver el problema usando recursión
-                ResolverHanoiRecursivo(discos, 'A', 'C', 'B', resultado);
+                ResolverHanoiRecursivo(discos, 'A', 'C', 'B', lvMovimientos);
                 
                 // Calcular número mínimo de movimientos (2^n - 1)
                 int movimientosMinimos = (int)Math.Pow(2, discos) - 1;
                 
-                resultado.AppendLine();
-                resultado.AppendLine($"=== RESUMEN ===");
-                resultado.AppendLine($"Total de movimientos realizados: {contadorMovimientos}");
-                resultado.AppendLine($"Número mínimo de movimientos: {movimientosMinimos}");
-                resultado.AppendLine($"¿Solución óptima? {(contadorMovimientos == movimientosMinimos ? "SÍ" : "NO")}");
-                
-                // Mostrar resultado
-                txtMovimientos.Text = resultado.ToString();
+                // Añadir resumen al final de la lista
+                lvMovimientos.Items.Add(new ListViewItem("")); // Separador
+                lvMovimientos.Items.Add(new ListViewItem(new string[] { "---", "RESUMEN" }));
+                lvMovimientos.Items.Add(new ListViewItem(new string[] { "Discos:", discos.ToString() }));
+                lvMovimientos.Items.Add(new ListViewItem(new string[] { "Mov. Mínimos:", movimientosMinimos.ToString() }));
+                lvMovimientos.Items.Add(new ListViewItem(new string[] { "Mov. Realizados:", contadorMovimientos.ToString() }));
+                lvMovimientos.Items.Add(new ListViewItem(new string[] { "Óptimo:", (contadorMovimientos == movimientosMinimos ? "SÍ" : "NO") }));
+
+                // Asegurarse de que el último elemento sea visible
+                lvMovimientos.EnsureVisible(lvMovimientos.Items.Count - 1);
             }
             catch (Exception ex)
             {
@@ -248,7 +247,7 @@ namespace Recursividad2
         private void btnLimpiar_Click(object sender, EventArgs e)
         {
             txtDiscos.Clear();
-            txtMovimientos.Clear();
+            lvMovimientos.Items.Clear();
             contadorMovimientos = 0;
             txtDiscos.Focus();
         }
