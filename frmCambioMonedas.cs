@@ -7,9 +7,9 @@ namespace Recursividad2
     public partial class frmCambioMonedas : Form
     {
         private readonly decimal[] denominaciones = { 100, 50, 20, 10, 5, 1, 0.50m, 0.20m, 0.10m, 0.01m };
-        private readonly string[] nombresMonedas = { 
-            "100 pesos", "50 pesos", "20 pesos", "10 pesos", "5 pesos", 
-            "1 peso", "50 centavos", "20 centavos", "10 centavos", "1 centavo" 
+        private readonly string[] nombresMonedas = {
+            "100 pesos", "50 pesos", "20 pesos", "10 pesos", "5 pesos",
+            "1 peso", "50 centavos", "20 centavos", "10 centavos", "1 centavo"
         };
 
         public frmCambioMonedas()
@@ -26,7 +26,7 @@ namespace Recursividad2
             this.txtMontoRecibido = new TextBox();
             this.btnCalcular = new Button();
             this.lblResultado = new Label();
-            this.txtResultado = new TextBox();
+            this.lvResultado = new ListView(); // Cambiado de TextBox a ListView
             this.btnLimpiar = new Button();
             this.btnRegresar = new Button();
             this.SuspendLayout();
@@ -92,15 +92,18 @@ namespace Recursividad2
             this.lblResultado.TabIndex = 6;
             this.lblResultado.Text = "Cambio:";
 
-            // txtResultado
-            this.txtResultado.Font = new Font("Microsoft Sans Serif", 10F);
-            this.txtResultado.Location = new Point(80, 250);
-            this.txtResultado.Multiline = true;
-            this.txtResultado.Name = "txtResultado";
-            this.txtResultado.ReadOnly = true;
-            this.txtResultado.ScrollBars = ScrollBars.Vertical;
-            this.txtResultado.Size = new Size(400, 150);
-            this.txtResultado.TabIndex = 7;
+            // lvResultado (ListView para el desglose)
+            this.lvResultado.Columns.AddRange(new ColumnHeader[] { new ColumnHeader { Text = "Cantidad", Width = 100 }, new ColumnHeader { Text = "Denominación", Width = 290 } });
+            this.lvResultado.Font = new Font("Microsoft Sans Serif", 10F);
+            this.lvResultado.Location = new Point(80, 250);
+            this.lvResultado.Name = "lvResultado";
+            this.lvResultado.Size = new Size(400, 150);
+            this.lvResultado.TabIndex = 7;
+            this.lvResultado.View = View.Details;
+            this.lvResultado.GridLines = true;
+            this.lvResultado.FullRowSelect = true;
+            this.lvResultado.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right; // Anclaje
+
 
             // btnLimpiar
             this.btnLimpiar.Font = new Font("Microsoft Sans Serif", 12F);
@@ -128,7 +131,7 @@ namespace Recursividad2
             this.ClientSize = new Size(520, 430);
             this.Controls.Add(this.btnRegresar);
             this.Controls.Add(this.btnLimpiar);
-            this.Controls.Add(this.txtResultado);
+            this.Controls.Add(this.lvResultado);
             this.Controls.Add(this.lblResultado);
             this.Controls.Add(this.btnCalcular);
             this.Controls.Add(this.txtMontoRecibido);
@@ -150,7 +153,7 @@ namespace Recursividad2
         private TextBox txtMontoRecibido;
         private Button btnCalcular;
         private Label lblResultado;
-        private TextBox txtResultado;
+        private ListView lvResultado;
         private Button btnLimpiar;
         private Button btnRegresar;
 
@@ -168,13 +171,13 @@ namespace Recursividad2
 
             // Calcular cuántas monedas de esta denominación necesitamos
             int cantidad = (int)(cambio / denominaciones[indice]);
-            
+
             // Guardar la cantidad de monedas de esta denominación
             monedas[indice] = cantidad;
-            
+
             // Calcular el cambio restante
             decimal cambioRestante = cambio - (cantidad * denominaciones[indice]);
-            
+
             // Llamada recursiva para la siguiente denominación
             CalcularCambioRecursivo(cambioRestante, indice + 1, monedas);
         }
@@ -239,21 +242,22 @@ namespace Recursividad2
                 // Calcular cambio usando recursión
                 CalcularCambioRecursivo(cambio, 0, monedas);
                 
-                // Mostrar resultado
-                string resultado = $"Monto a pagar: ${montoPagar:F2}\n";
-                resultado += $"Monto recibido: ${montoRecibido:F2}\n";
-                resultado += $"Cambio total: ${cambio:F2}\n\n";
-                resultado += "Desglose del cambio (mínimo número de monedas):\n\n";
-                
+                // Limpiar la lista y mostrar información general
+                lvResultado.Items.Clear();
+                lvResultado.Items.Add(new ListViewItem(new string[] { "Monto a pagar:", $"${montoPagar:F2}" }));
+                lvResultado.Items.Add(new ListViewItem(new string[] { "Monto recibido:", $"${montoRecibido:F2}" }));
+                lvResultado.Items.Add(new ListViewItem(new string[] { "Cambio total:", $"${cambio:F2}" }));
+                lvResultado.Items.Add(new ListViewItem("")); // Espacio en blanco
+                lvResultado.Items.Add(new ListViewItem(new string[] { "Desglose del cambio:", "" }));
+
+                // Mostrar desglose en la lista
                 for (int i = 0; i < denominaciones.Length; i++)
                 {
                     if (monedas[i] > 0)
                     {
-                        resultado += $"{monedas[i]} moneda(s) de {nombresMonedas[i]}\n";
+                        lvResultado.Items.Add(new ListViewItem(new string[] { monedas[i].ToString(), nombresMonedas[i] }));
                     }
                 }
-                
-                txtResultado.Text = resultado;
             }
             catch (Exception ex)
             {
@@ -266,7 +270,7 @@ namespace Recursividad2
         {
             txtMontoPagar.Clear();
             txtMontoRecibido.Clear();
-            txtResultado.Clear();
+            lvResultado.Items.Clear();
             txtMontoPagar.Focus();
         }
 

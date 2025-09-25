@@ -22,6 +22,7 @@ namespace Recursividad2
             this.btnPalindromo = new Button();
             this.btnPermutaciones = new Button();
             this.btnSalir = new Button();
+            this.pnlContainer = new Panel(); // Panel para agrupar controles
             this.SuspendLayout();
 
             // lblTitulo
@@ -30,8 +31,8 @@ namespace Recursividad2
             this.lblTitulo.Location = new Point(150, 30);
             this.lblTitulo.Name = "lblTitulo";
             this.lblTitulo.Size = new Size(350, 26);
-            this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "PRÁCTICA 1 - RECURSIVIDAD";
+            this.lblTitulo.TabIndex = 9; // Ajustar TabIndex
+            this.lblTitulo.Text = "Actividad 2 - Recursividad";
             this.lblTitulo.TextAlign = ContentAlignment.MiddleCenter;
 
             // btnFactorial
@@ -114,22 +115,31 @@ namespace Recursividad2
             this.btnSalir.UseVisualStyleBackColor = true;
             this.btnSalir.Click += new EventHandler(this.btnSalir_Click);
 
+            // pnlContainer (Panel para centrar)
+            this.pnlContainer.SuspendLayout();
+            this.pnlContainer.Controls.Add(this.btnFactorial);
+            this.pnlContainer.Controls.Add(this.btnFibonacci);
+            this.pnlContainer.Controls.Add(this.btnMCD);
+            this.pnlContainer.Controls.Add(this.btnCambioMonedas);
+            this.pnlContainer.Controls.Add(this.btnTorresHanoi);
+            this.pnlContainer.Controls.Add(this.btnPalindromo);
+            this.pnlContainer.Controls.Add(this.btnPermutaciones);
+            this.pnlContainer.Controls.Add(this.btnSalir);
+            this.pnlContainer.Location = new Point(0, 60);
+            this.pnlContainer.Size = new Size(600, 320); // Aumentar altura del panel
+            this.pnlContainer.ResumeLayout(false);
+
             // frmMenuPrincipal
             this.AutoScaleDimensions = new SizeF(6F, 13F);
             this.AutoScaleMode = AutoScaleMode.Font;
-            this.ClientSize = new Size(600, 350);
-            this.Controls.Add(this.btnSalir);
-            this.Controls.Add(this.btnPermutaciones);
-            this.Controls.Add(this.btnPalindromo);
-            this.Controls.Add(this.btnTorresHanoi);
-            this.Controls.Add(this.btnCambioMonedas);
-            this.Controls.Add(this.btnMCD);
-            this.Controls.Add(this.btnFibonacci);
-            this.Controls.Add(this.btnFactorial);
+            this.ClientSize = new Size(600, 410); // Aumentar altura del formulario
+            this.Controls.Add(this.pnlContainer);
             this.Controls.Add(this.lblTitulo);
+            this.MinimumSize = new Size(620, 400); // Tamaño mínimo para que no se corte
             this.Name = "frmMenuPrincipal";
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Text = "Práctica de Recursividad";
+            this.Resize += new EventHandler(this.frmMenuPrincipal_Resize); // Añadir evento Resize
             this.ResumeLayout(false);
             this.PerformLayout();
         }
@@ -143,6 +153,7 @@ namespace Recursividad2
         private Button btnPalindromo;
         private Button btnPermutaciones;
         private Button btnSalir;
+        private Panel pnlContainer;
 
         private void btnFactorial_Click(object sender, EventArgs e)
         {
@@ -193,6 +204,14 @@ namespace Recursividad2
             {
                 Application.Exit();
             }
+        }
+
+        private void frmMenuPrincipal_Resize(object sender, EventArgs e)
+        {
+            // Centrar el título y el panel de botones horizontalmente
+            lblTitulo.Left = (this.ClientSize.Width - lblTitulo.Width) / 2;
+            pnlContainer.Left = (this.ClientSize.Width - pnlContainer.Width) / 2;
+            pnlContainer.Top = lblTitulo.Bottom + 20;
         }
     }
 }

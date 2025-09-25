@@ -19,7 +19,7 @@ namespace Recursividad2
             this.txtTexto = new TextBox();
             this.btnGenerar = new Button();
             this.lblResultado = new Label();
-            this.txtResultado = new TextBox();
+            this.lvResultado = new ListView(); // Cambiado de TextBox a ListView
             this.btnLimpiar = new Button();
             this.btnRegresar = new Button();
             this.lblInformacion = new Label();
@@ -89,15 +89,17 @@ namespace Recursividad2
             this.lblResultado.TabIndex = 6;
             this.lblResultado.Text = "Permutaciones generadas:";
 
-            // txtResultado
-            this.txtResultado.Font = new Font("Microsoft Sans Serif", 10F);
-            this.txtResultado.Location = new Point(80, 260);
-            this.txtResultado.Multiline = true;
-            this.txtResultado.Name = "txtResultado";
-            this.txtResultado.ReadOnly = true;
-            this.txtResultado.ScrollBars = ScrollBars.Vertical;
-            this.txtResultado.Size = new Size(400, 200);
-            this.txtResultado.TabIndex = 7;
+            // lvResultado (ListView para las permutaciones)
+            this.lvResultado.Columns.AddRange(new ColumnHeader[] { new ColumnHeader { Text = "#", Width = 60 }, new ColumnHeader { Text = "Permutación", Width = 330 } });
+            this.lvResultado.Font = new Font("Microsoft Sans Serif", 10F);
+            this.lvResultado.Location = new Point(80, 260);
+            this.lvResultado.Name = "lvResultado";
+            this.lvResultado.Size = new Size(400, 200);
+            this.lvResultado.TabIndex = 7;
+            this.lvResultado.View = View.Details;
+            this.lvResultado.GridLines = true;
+            this.lvResultado.FullRowSelect = true;
+            this.lvResultado.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
             // btnLimpiar
             this.btnLimpiar.Font = new Font("Microsoft Sans Serif", 12F);
@@ -125,7 +127,7 @@ namespace Recursividad2
             this.ClientSize = new Size(520, 490);
             this.Controls.Add(this.btnRegresar);
             this.Controls.Add(this.btnLimpiar);
-            this.Controls.Add(this.txtResultado);
+            this.Controls.Add(this.lvResultado);
             this.Controls.Add(this.lblResultado);
             this.Controls.Add(this.lblContador);
             this.Controls.Add(this.btnGenerar);
@@ -147,7 +149,7 @@ namespace Recursividad2
         private Button btnGenerar;
         private Label lblContador;
         private Label lblResultado;
-        private TextBox txtResultado;
+        private ListView lvResultado;
         private Button btnLimpiar;
         private Button btnRegresar;
 
@@ -266,37 +268,34 @@ namespace Recursividad2
                 // Calcular número esperado de permutaciones
                 long permutacionesEsperadas = Factorial(textoLimpio.Length);
                 
-                // Mostrar resultado
-                string resultado = $"Texto original: \"{textoOriginal}\"\n";
-                resultado += $"Caracteres únicos: \"{textoLimpio}\"\n";
-                resultado += $"Número de caracteres únicos: {textoLimpio.Length}\n";
-                resultado += $"Permutaciones esperadas: {permutacionesEsperadas}\n";
-                resultado += $"Permutaciones generadas: {permutaciones.Count}\n\n";
-                
+                // Limpiar lista y mostrar resultados
+                lvResultado.Items.Clear();
+
+                // Añadir resumen a la lista
+                lvResultado.Items.Add(new ListViewItem(new string[] { "Info", $"Texto original: \"{textoOriginal}\"" }));
+                lvResultado.Items.Add(new ListViewItem(new string[] { "Info", $"Caracteres únicos: \"{textoLimpio}\"" }));
+                lvResultado.Items.Add(new ListViewItem(new string[] { "Info", $"Permutaciones esperadas: {permutacionesEsperadas}" }));
+                lvResultado.Items.Add(new ListViewItem(new string[] { "Info", $"Permutaciones generadas: {permutaciones.Count}" }));
+                lvResultado.Items.Add(new ListViewItem("")); // Separador
+
                 if (permutaciones.Count <= 50) // Mostrar todas si son pocas
                 {
-                    resultado += "=== TODAS LAS PERMUTACIONES ===\n";
                     for (int i = 0; i < permutaciones.Count; i++)
                     {
-                        resultado += $"{i + 1:D3}: {permutaciones[i]}\n";
+                        lvResultado.Items.Add(new ListViewItem(new string[] { (i + 1).ToString(), permutaciones[i] }));
                     }
                 }
                 else // Mostrar solo las primeras 50 si son muchas
                 {
-                    resultado += "=== PRIMERAS 50 PERMUTACIONES ===\n";
                     for (int i = 0; i < 50; i++)
                     {
-                        resultado += $"{i + 1:D3}: {permutaciones[i]}\n";
+                        lvResultado.Items.Add(new ListViewItem(new string[] { (i + 1).ToString(), permutaciones[i] }));
                     }
-                    resultado += $"\n... y {permutaciones.Count - 50} más.\n";
-                    resultado += "Use un texto más corto para ver todas las permutaciones.";
+                    lvResultado.Items.Add(new ListViewItem(new string[] { "...", $"y {permutaciones.Count - 50} más." }));
                 }
                 
                 // Actualizar contador
-                lblContador.Text = $"Total de permutaciones: {permutaciones.Count}";
-                
-                // Mostrar resultado
-                txtResultado.Text = resultado;
+                lblContador.Text = $"Total de permutaciones: {permutaciones.Count}";                
             }
             catch (Exception ex)
             {
@@ -308,7 +307,7 @@ namespace Recursividad2
         private void btnLimpiar_Click(object sender, EventArgs e)
         {
             txtTexto.Clear();
-            txtResultado.Clear();
+            lvResultado.Items.Clear();
             lblContador.Text = "Total de permutaciones: 0";
             permutaciones.Clear();
             txtTexto.Focus();

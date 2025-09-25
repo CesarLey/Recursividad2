@@ -18,7 +18,7 @@ namespace Recursividad2
             this.txtTerminos = new TextBox();
             this.btnGenerar = new Button();
             this.lblSerie = new Label();
-            this.txtSerie = new TextBox();
+            this.lvSerie = new ListView(); // Cambiado de TextBox a ListView
             this.btnLimpiar = new Button();
             this.btnRegresar = new Button();
             this.SuspendLayout();
@@ -68,15 +68,17 @@ namespace Recursividad2
             this.lblSerie.TabIndex = 4;
             this.lblSerie.Text = "Serie Fibonacci:";
 
-            // txtSerie
-            this.txtSerie.Font = new Font("Microsoft Sans Serif", 10F);
-            this.txtSerie.Location = new Point(80, 210);
-            this.txtSerie.Multiline = true;
-            this.txtSerie.Name = "txtSerie";
-            this.txtSerie.ReadOnly = true;
-            this.txtSerie.ScrollBars = ScrollBars.Vertical;
-            this.txtSerie.Size = new Size(350, 100);
-            this.txtSerie.TabIndex = 5;
+            // lvSerie (ListView para resultados)
+            this.lvSerie.Columns.AddRange(new ColumnHeader[] { new ColumnHeader { Text = "Término", Width = 150 }, new ColumnHeader { Text = "Valor", Width = 190 } });
+            this.lvSerie.Font = new Font("Microsoft Sans Serif", 10F);
+            this.lvSerie.Location = new Point(80, 210);
+            this.lvSerie.Name = "lvSerie";
+            this.lvSerie.Size = new Size(350, 120);
+            this.lvSerie.TabIndex = 5;
+            this.lvSerie.View = View.Details;
+            this.lvSerie.GridLines = true;
+            this.lvSerie.FullRowSelect = true;
+            this.lvSerie.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right; // Anclaje
 
             // btnLimpiar
             this.btnLimpiar.Font = new Font("Microsoft Sans Serif", 12F);
@@ -101,10 +103,10 @@ namespace Recursividad2
             // frmFibonacci
             this.AutoScaleDimensions = new SizeF(6F, 13F);
             this.AutoScaleMode = AutoScaleMode.Font;
-            this.ClientSize = new Size(500, 350);
+            this.ClientSize = new Size(500, 380);
             this.Controls.Add(this.btnRegresar);
             this.Controls.Add(this.btnLimpiar);
-            this.Controls.Add(this.txtSerie);
+            this.Controls.Add(this.lvSerie);
             this.Controls.Add(this.lblSerie);
             this.Controls.Add(this.btnGenerar);
             this.Controls.Add(this.txtTerminos);
@@ -122,7 +124,7 @@ namespace Recursividad2
         private TextBox txtTerminos;
         private Button btnGenerar;
         private Label lblSerie;
-        private TextBox txtSerie;
+        private ListView lvSerie;
         private Button btnLimpiar;
         private Button btnRegresar;
 
@@ -186,16 +188,19 @@ namespace Recursividad2
                     return;
                 }
 
+                // Limpiar la lista antes de generar nuevos resultados
+                lvSerie.Items.Clear();
+
                 // Generar serie de Fibonacci
-                string serie = "Serie de Fibonacci:\n";
                 for (int i = 0; i < terminos; i++)
                 {
                     long valor = FibonacciRecursivo(i);
-                    serie += $"F({i}) = {valor}\n";
+                    // Crear un nuevo item para la lista
+                    ListViewItem item = new ListViewItem($"F({i})");
+                    // Añadir el valor en la segunda columna
+                    item.SubItems.Add(valor.ToString());
+                    lvSerie.Items.Add(item);
                 }
-                
-                // Mostrar resultado
-                txtSerie.Text = serie;
             }
             catch (Exception ex)
             {
@@ -207,7 +212,7 @@ namespace Recursividad2
         private void btnLimpiar_Click(object sender, EventArgs e)
         {
             txtTerminos.Clear();
-            txtSerie.Clear();
+            lvSerie.Items.Clear();
             txtTerminos.Focus();
         }
 

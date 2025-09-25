@@ -1,8 +1,8 @@
-# Práctica 1 - Recursividad
+# Actividad 2 - Recursividad
 
 ## Descripción del Proyecto
 
-Esta aplicación de escritorio en C# implementa **7 ejercicios de recursividad** como parte de la Práctica 1 del curso. La aplicación utiliza Windows Forms para proporcionar una interfaz gráfica intuitiva y moderna.
+Esta aplicación de escritorio en C# implementa **7 ejercicios de recursividad** como parte de la Actividad 2 del curso. La aplicación utiliza Windows Forms para proporcionar una interfaz gráfica intuitiva y moderna.
 
 ## Ejercicios Implementados
 

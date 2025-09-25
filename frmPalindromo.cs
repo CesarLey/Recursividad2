@@ -18,7 +18,7 @@ namespace Recursividad2
             this.txtTexto = new TextBox();
             this.btnVerificar = new Button();
             this.lblResultado = new Label();
-            this.txtResultado = new TextBox();
+            this.lvResultado = new ListView(); // Cambiado de TextBox a ListView
             this.btnLimpiar = new Button();
             this.btnRegresar = new Button();
             this.lblInformacion = new Label();
@@ -78,15 +78,17 @@ namespace Recursividad2
             this.lblResultado.TabIndex = 5;
             this.lblResultado.Text = "Resultado:";
 
-            // txtResultado
-            this.txtResultado.Font = new Font("Microsoft Sans Serif", 12F);
-            this.txtResultado.Location = new Point(80, 230);
-            this.txtResultado.Multiline = true;
-            this.txtResultado.Name = "txtResultado";
-            this.txtResultado.ReadOnly = true;
-            this.txtResultado.ScrollBars = ScrollBars.Vertical;
-            this.txtResultado.Size = new Size(350, 100);
-            this.txtResultado.TabIndex = 6;
+            // lvResultado (ListView para el análisis)
+            this.lvResultado.Columns.AddRange(new ColumnHeader[] { new ColumnHeader { Text = "Concepto", Width = 150 }, new ColumnHeader { Text = "Descripción", Width = 240 } });
+            this.lvResultado.Font = new Font("Microsoft Sans Serif", 10F);
+            this.lvResultado.Location = new Point(80, 230);
+            this.lvResultado.Name = "lvResultado";
+            this.lvResultado.Size = new Size(400, 150);
+            this.lvResultado.TabIndex = 6;
+            this.lvResultado.View = View.Details;
+            this.lvResultado.GridLines = true;
+            this.lvResultado.FullRowSelect = true;
+            this.lvResultado.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
             // btnLimpiar
             this.btnLimpiar.Font = new Font("Microsoft Sans Serif", 12F);
@@ -111,10 +113,10 @@ namespace Recursividad2
             // frmPalindromo
             this.AutoScaleDimensions = new SizeF(6F, 13F);
             this.AutoScaleMode = AutoScaleMode.Font;
-            this.ClientSize = new Size(500, 360);
+            this.ClientSize = new Size(520, 410);
             this.Controls.Add(this.btnRegresar);
             this.Controls.Add(this.btnLimpiar);
-            this.Controls.Add(this.txtResultado);
+            this.Controls.Add(this.lvResultado);
             this.Controls.Add(this.lblResultado);
             this.Controls.Add(this.btnVerificar);
             this.Controls.Add(this.txtTexto);
@@ -134,7 +136,7 @@ namespace Recursividad2
         private TextBox txtTexto;
         private Button btnVerificar;
         private Label lblResultado;
-        private TextBox txtResultado;
+        private ListView lvResultado;
         private Button btnLimpiar;
         private Button btnRegresar;
 
@@ -209,34 +211,33 @@ namespace Recursividad2
                 // Verificar si es palíndromo usando recursión
                 bool esPalindromo = EsPalindromoRecursivo(textoNormalizado, 0, textoNormalizado.Length - 1);
                 
-                // Mostrar resultado
-                string resultado = $"Texto original: \"{textoOriginal}\"\n";
-                resultado += $"Texto normalizado: \"{textoNormalizado}\"\n";
-                resultado += $"Longitud: {textoNormalizado.Length} caracteres\n\n";
-                
+                // Limpiar y mostrar resultados en la lista
+                lvResultado.Items.Clear();
+                lvResultado.Items.Add(new ListViewItem(new string[] { "Texto original", $"\"{textoOriginal}\"" }));
+                lvResultado.Items.Add(new ListViewItem(new string[] { "Texto normalizado", $"\"{textoNormalizado}\"" }));
+                lvResultado.Items.Add(new ListViewItem(new string[] { "Longitud", $"{textoNormalizado.Length} caracteres" }));
+                lvResultado.Items.Add(new ListViewItem("")); // Separador
+
                 if (esPalindromo)
                 {
-                    resultado += "✅ RESULTADO: ES PALÍNDROMO\n";
-                    resultado += "El texto se lee igual de izquierda a derecha y viceversa.";
+                    lvResultado.Items.Add(new ListViewItem(new string[] { "Resultado", "✅ ES PALÍNDROMO" }));
+                    lvResultado.Items.Add(new ListViewItem(new string[] { "Descripción", "Se lee igual en ambos sentidos." }));
                 }
                 else
                 {
-                    resultado += "❌ RESULTADO: NO ES PALÍNDROMO\n";
-                    resultado += "El texto no se lee igual de izquierda a derecha y viceversa.";
+                    lvResultado.Items.Add(new ListViewItem(new string[] { "Resultado", "❌ NO ES PALÍNDROMO" }));
+                    lvResultado.Items.Add(new ListViewItem(new string[] { "Descripción", "No se lee igual en ambos sentidos." }));
                 }
-                
-                resultado += "\n\n=== ANÁLISIS DETALLADO ===\n";
-                resultado += $"Caracteres comparados: {textoNormalizado.Length / 2 + (textoNormalizado.Length % 2)}\n";
-                
+
+                lvResultado.Items.Add(new ListViewItem("")); // Separador
+                lvResultado.Items.Add(new ListViewItem(new string[] { "Análisis Detallado", "" }));
                 // Mostrar comparación carácter por carácter
                 for (int i = 0; i < textoNormalizado.Length / 2; i++)
                 {
                     char izquierda = textoNormalizado[i];
                     char derecha = textoNormalizado[textoNormalizado.Length - 1 - i];
-                    resultado += $"Posición {i}: '{izquierda}' vs '{derecha}' - {(izquierda == derecha ? "✓" : "✗")}\n";
+                    lvResultado.Items.Add(new ListViewItem(new string[] { $"Posición {i}", $"'{izquierda}' vs '{derecha}' - {(izquierda == derecha ? "✓" : "✗")}" }));
                 }
-                
-                txtResultado.Text = resultado;
             }
             catch (Exception ex)
             {
@@ -248,7 +249,7 @@ namespace Recursividad2
         private void btnLimpiar_Click(object sender, EventArgs e)
         {
             txtTexto.Clear();
-            txtResultado.Clear();
+            lvResultado.Items.Clear();
             txtTexto.Focus();
         }
 
